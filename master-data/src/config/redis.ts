@@ -9,7 +9,11 @@ export const getCached = async <T>(key: string): Promise<T | null> => {
   return raw ? (JSON.parse(raw) as T) : null;
 };
 
-export const setCache = async (key: string, value: unknown, ttl = DEFAULT_TTL) => {
+export const setCache = async (
+  key: string,
+  value: unknown,
+  ttl = DEFAULT_TTL,
+) => {
   await redis.set(key, JSON.stringify(value), "EX", ttl);
 };
 

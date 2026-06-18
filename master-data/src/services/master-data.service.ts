@@ -35,20 +35,35 @@ export const listLocalitiesByCity = async (city: string) => {
   return data;
 };
 
-export const createLocation = async (state: string, city: string, locality: string) => {
+export const createLocation = async (
+  state: string,
+  city: string,
+  locality: string,
+) => {
   const loc = await prisma.location.create({ data: { state, city, locality } });
   await bustPrefix("master:locations");
   return loc;
 };
 
-export const updateLocation = async (id: number, data: Partial<{ state: string; city: string; locality: string; isActive: boolean }>) => {
+export const updateLocation = async (
+  id: number,
+  data: Partial<{
+    state: string;
+    city: string;
+    locality: string;
+    isActive: boolean;
+  }>,
+) => {
   const loc = await prisma.location.update({ where: { id }, data });
   await bustPrefix("master:locations");
   return loc;
 };
 
 export const deleteLocation = async (id: number) => {
-  const loc = await prisma.location.update({ where: { id }, data: { isActive: false } });
+  const loc = await prisma.location.update({
+    where: { id },
+    data: { isActive: false },
+  });
   await bustPrefix("master:locations");
   return loc;
 };
@@ -57,7 +72,10 @@ export const deleteLocation = async (id: number) => {
 // Industries, Functions, Skills, Languages all share the same shape:
 // { id, name, isActive } — so one factory builds CRUD for all of them.
 
-function buildSimpleResource(modelName: "industry" | "jobFunction" | "skill" | "language", cacheKey: string) {
+function buildSimpleResource(
+  modelName: "industry" | "jobFunction" | "skill" | "language",
+  cacheKey: string,
+) {
   const model = (prisma as any)[modelName];
 
   return {
@@ -75,13 +93,19 @@ function buildSimpleResource(modelName: "industry" | "jobFunction" | "skill" | "
       await bustPrefix(cacheKey);
       return item;
     },
-    update: async (id: number, data: Partial<{ name: string; isActive: boolean }>) => {
+    update: async (
+      id: number,
+      data: Partial<{ name: string; isActive: boolean }>,
+    ) => {
       const item = await model.update({ where: { id }, data });
       await bustPrefix(cacheKey);
       return item;
     },
     remove: async (id: number) => {
-      const item = await model.update({ where: { id }, data: { isActive: false } });
+      const item = await model.update({
+        where: { id },
+        data: { isActive: false },
+      });
       await bustPrefix(cacheKey);
       return item;
     },
@@ -95,7 +119,9 @@ export const languages = buildSimpleResource("language", "master:languages");
 
 // ───────────── Job roles (has functionId) ─────────────
 export const listJobRoles = async (functionId?: number) => {
-  const key = functionId ? `master:job_roles:fn:${functionId}` : "master:job_roles:all";
+  const key = functionId
+    ? `master:job_roles:fn:${functionId}`
+    : "master:job_roles:all";
   const cached = await getCached(key);
   if (cached) return cached;
   const data = await prisma.jobRole.findMany({
@@ -111,14 +137,20 @@ export const createJobRole = async (name: string, functionId?: number) => {
   return role;
 };
 
-export const updateJobRole = async (id: number, data: Partial<{ name: string; functionId: number; isActive: boolean }>) => {
+export const updateJobRole = async (
+  id: number,
+  data: Partial<{ name: string; functionId: number; isActive: boolean }>,
+) => {
   const role = await prisma.jobRole.update({ where: { id }, data });
   await bustPrefix("master:job_roles");
   return role;
 };
 
 export const deleteJobRole = async (id: number) => {
-  const role = await prisma.jobRole.update({ where: { id }, data: { isActive: false } });
+  const role = await prisma.jobRole.update({
+    where: { id },
+    data: { isActive: false },
+  });
   await bustPrefix("master:job_roles");
   return role;
 };
@@ -127,7 +159,9 @@ export const deleteJobRole = async (id: number) => {
 export const listQualifications = async () => {
   const cached = await getCached("master:qualifications");
   if (cached) return cached;
-  const data = await prisma.qualification.findMany({ where: { isActive: true } });
+  const data = await prisma.qualification.findMany({
+    where: { isActive: true },
+  });
   await setCache("master:qualifications", data);
   return data;
 };

@@ -98,7 +98,7 @@ declare global {
 export const requireAuth = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const token = req.session?.jwt;
   // console.log(token);
@@ -107,10 +107,7 @@ export const requireAuth = (
   }
 
   try {
-    const payload = jwt.verify(
-      token,
-      process.env.JWT_KEY!
-    ) as UserPayload;
+    const payload = jwt.verify(token, process.env.JWT_KEY!) as UserPayload;
 
     req.currentUser = payload;
   } catch {
@@ -121,15 +118,9 @@ export const requireAuth = (
 };
 
 export const requireRole = (role: UserPayload["role"]) => {
-  return (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     if (!req.currentUser || req.currentUser.role !== role) {
-      throw new ForbiddenError(
-        `Only ${role} can perform this action`
-      );
+      throw new ForbiddenError(`Only ${role} can perform this action`);
     }
 
     next();
@@ -139,7 +130,7 @@ export const requireRole = (role: UserPayload["role"]) => {
 export const validateRequest = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const errors = validationResult(req);
 
@@ -155,7 +146,7 @@ export const errorHandler = (
   err: Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   if (err instanceof CustomError) {
     return res.status(err.statusCode).json({

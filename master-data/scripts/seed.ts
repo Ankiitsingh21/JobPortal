@@ -4,7 +4,10 @@ import * as XLSX from "xlsx";
 import path from "path";
 import { prisma } from "../src/config/db";
 
-const FILE_PATH = path.join(__dirname, "../data/All_Data_Update_in_Portal.xlsx");
+const FILE_PATH = path.join(
+  __dirname,
+  "../data/All_Data_Update_in_Portal.xlsx",
+);
 
 type Row = Record<string, any>;
 
@@ -15,7 +18,9 @@ const normalize = (value: unknown) =>
     .toLowerCase();
 
 const firstValue = (row: Row) => {
-  const value = Object.values(row).find((v) => String(v ?? "").trim().length > 0);
+  const value = Object.values(row).find(
+    (v) => String(v ?? "").trim().length > 0,
+  );
   return String(value ?? "").trim();
 };
 
@@ -48,9 +53,7 @@ const seed = async () => {
   // ===================== Skills =====================
   const skillRows = getSheet("SKILLS");
   await prisma.skill.createMany({
-    data: skillRows
-      .map((r) => ({ name: firstValue(r) }))
-      .filter((x) => x.name),
+    data: skillRows.map((r) => ({ name: firstValue(r) })).filter((x) => x.name),
     skipDuplicates: true,
   });
   console.log(`Seeded ${skillRows.length} skills`);
@@ -93,35 +96,87 @@ const seed = async () => {
   // Row 1 => headers like "Delhi / Delhi", "Noida / Uttar Pradesh", etc.
   // Rows 2..n => locality values under each city/state column.
   const locationSheetName =
-    workbook.SheetNames.find((s) => s.trim().toLowerCase() === "location") ?? null;
+    workbook.SheetNames.find((s) => s.trim().toLowerCase() === "location") ??
+    null;
 
   if (!locationSheetName) {
     console.warn('Sheet "Location" not found, skipping locations');
   } else {
     const locationSheet = workbook.Sheets[locationSheetName];
-    const matrix = XLSX.utils.sheet_to_json<any[]>(locationSheet, { header: 1, defval: "" });
+    const matrix = XLSX.utils.sheet_to_json<any[]>(locationSheet, {
+      header: 1,
+      defval: "",
+    });
 
     const headers = (matrix[0] ?? []).map((h) => String(h ?? "").trim());
 
     const headerMap: Record<string, { state: string; city: string }> = {
       [normalize("Delhi / Delhi")]: { state: "Delhi", city: "Delhi" },
-      [normalize("Noida / Uttar Pradesh")]: { state: "Uttar Pradesh", city: "Noida" },
-      [normalize("Greater Noida /Uttar Pradesh")]: { state: "Uttar Pradesh", city: "Greater Noida" },
+      [normalize("Noida / Uttar Pradesh")]: {
+        state: "Uttar Pradesh",
+        city: "Noida",
+      },
+      [normalize("Greater Noida /Uttar Pradesh")]: {
+        state: "Uttar Pradesh",
+        city: "Greater Noida",
+      },
       [normalize("Gurugram / Haryana")]: { state: "Haryana", city: "Gurugram" },
-      [normalize("Haryana / Faridabad/ Locality")]: { state: "Haryana", city: "Faridabad" },
-      [normalize("Uttar Pradesh / Ghaziabad / Locality")]: { state: "Uttar Pradesh", city: "Ghaziabad" },
-      [normalize("Uttar Pradesh / Meerut /Locality")]: { state: "Uttar Pradesh", city: "Meerut" },
-      [normalize("Uttar Pradesh/ Kanpur //Locality")]: { state: "Uttar Pradesh", city: "Kanpur" },
-      [normalize("Uttar Pradesh / Luckknow /Locality")]: { state: "Uttar Pradesh", city: "Lucknow" },
-      [normalize("Maharashtra / Mumbai//Locality")]: { state: "Maharashtra", city: "Mumbai" },
-      [normalize("Haryana/ Punjab /Chandigarh")]: { state: "Punjab", city: "Chandigarh" },
-      [normalize("Mahrastra / Pune / Locality")]: { state: "Maharashtra", city: "Pune" },
-      [normalize("Bihar / Patna / Locality")]: { state: "Bihar", city: "Patna" },
-      [normalize("Bihar / Bodh Gaya / Locality")]: { state: "Bihar", city: "Bodh Gaya" },
-      [normalize("HARYANA/ HISAR/ LOCALITY")]: { state: "Haryana", city: "Hisar" },
-      [normalize("HARYANA/AMBALA/LOCALITY")]: { state: "Haryana", city: "Ambala" },
-      [normalize("HARYANA / KARNAL/LOCALITY")]: { state: "Haryana", city: "Karnal" },
-      [normalize("Jaipur STATE RAJESTHAN /LOCALITY")]: { state: "Rajasthan", city: "Jaipur" },
+      [normalize("Haryana / Faridabad/ Locality")]: {
+        state: "Haryana",
+        city: "Faridabad",
+      },
+      [normalize("Uttar Pradesh / Ghaziabad / Locality")]: {
+        state: "Uttar Pradesh",
+        city: "Ghaziabad",
+      },
+      [normalize("Uttar Pradesh / Meerut /Locality")]: {
+        state: "Uttar Pradesh",
+        city: "Meerut",
+      },
+      [normalize("Uttar Pradesh/ Kanpur //Locality")]: {
+        state: "Uttar Pradesh",
+        city: "Kanpur",
+      },
+      [normalize("Uttar Pradesh / Luckknow /Locality")]: {
+        state: "Uttar Pradesh",
+        city: "Lucknow",
+      },
+      [normalize("Maharashtra / Mumbai//Locality")]: {
+        state: "Maharashtra",
+        city: "Mumbai",
+      },
+      [normalize("Haryana/ Punjab /Chandigarh")]: {
+        state: "Punjab",
+        city: "Chandigarh",
+      },
+      [normalize("Mahrastra / Pune / Locality")]: {
+        state: "Maharashtra",
+        city: "Pune",
+      },
+      [normalize("Bihar / Patna / Locality")]: {
+        state: "Bihar",
+        city: "Patna",
+      },
+      [normalize("Bihar / Bodh Gaya / Locality")]: {
+        state: "Bihar",
+        city: "Bodh Gaya",
+      },
+      [normalize("HARYANA/ HISAR/ LOCALITY")]: {
+        state: "Haryana",
+        city: "Hisar",
+      },
+      [normalize("HARYANA/AMBALA/LOCALITY")]: {
+        state: "Haryana",
+        city: "Ambala",
+      },
+      [normalize("HARYANA / KARNAL/LOCALITY")]: {
+        state: "Haryana",
+        city: "Karnal",
+      },
+      [normalize("Jaipur STATE RAJESTHAN /LOCALITY")]: {
+        state: "Rajasthan",
+        city: "Jaipur",
+      },
     };
 
     const locations: { state: string; city: string; locality: string }[] = [];
@@ -175,7 +230,7 @@ const seed = async () => {
     }
 
     console.log("First 10 parsed locations:");
-console.log(locations.slice(0, 10));
+    console.log(locations.slice(0, 10));
     await prisma.location.createMany({
       data: locations,
       skipDuplicates: true,
