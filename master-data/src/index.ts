@@ -18,5 +18,4 @@ const start = async () => {
     console.log("Master Data Service listening on 3000");
   });
 };
-
 start();
