@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Location {
+  id        Int      @id @default(autoincrement())
+  state     String
+  city      String
+  locality  String
+  isActive  Boolean  @default(true)
+
+  @@unique([state, city, locality])
+  @@index([city])
+}
+
+model Industry {
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  isActive Boolean @default(true)
+}
+
+model JobFunction {
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  isActive Boolean @default(true)
+}
+
+model JobRole {
+  id         Int     @id @default(autoincrement())
+  name       String
+  functionId Int?
+  isActive   Boolean @default(true)
+}
+
+model Skill {
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  isActive Boolean @default(true)
+}
+
+model Qualification {
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  level    String
+  isActive Boolean @default(true)
+}
+
+model Language {
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  isActive Boolean @default(true)
+}
