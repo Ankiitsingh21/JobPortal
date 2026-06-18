@@ -8,8 +8,8 @@ const start = async () => {
   if (!process.env.JWT_KEY) throw new Error("JWT_KEY must be defined");
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL must be defined");
   if (!process.env.REDIS_URL) throw new Error("REDIS_URL must be defined");
-
-//   console.log(process.env.DATABASE_URL);
+  // console.log(process.env.JWT_KEY);
+  // console.log(process.env.DATABASE_URL);
   await connectDB();
   await redis.ping();
   console.log("Redis connected");
