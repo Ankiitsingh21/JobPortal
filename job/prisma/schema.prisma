@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum WageType {
+  daily
+  monthly
+}
+
+enum ShiftType {
+  day
+  night
+  rotational
+}
+
+enum JobType {
+  full_time
+  part_time
+  contract
+}
+
+enum JobStatus {
+  draft
+  active
+  closed
+}
+
+model Job {
+  id                   String     @id @default(uuid())
+  title                String
+  description          String?
+  industryId           Int                // soft ref -> Master Data
+  functionId           Int?               // soft ref -> Master Data
+  jobRoleId            Int?               // soft ref -> Master Data
+  locationId           Int                // soft ref -> Master Data
+  wageMin              Int?
+  wageMax              Int?
+  wageType             WageType?
+  shiftType            ShiftType?
+  jobType              JobType?
+  headcountRequired    Int
+  headcountFilled      Int        @default(0)
+  minExperienceMonths  Int        @default(0)
+  status               JobStatus  @default(draft)
+  postedBy             String             // soft ref -> Auth Service users.id (recruiter)
+
+  skillIds             Int[]      @default([])  // soft ref -> Master Data
+  qualificationIds     Int[]      @default([])  // soft ref -> Master Data
+
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  @@index([industryId])
+  @@index([postedBy])
+  @@index([status])
+}

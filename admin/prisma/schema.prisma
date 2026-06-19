@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Recruiter {
+  id        String   @id @default(uuid())
+  userId    String   @unique   // soft ref -> Auth Service users.id
+  name      String
+  email     String
+  createdBy String              // soft ref -> Auth Service users.id (the admin)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  categories RecruiterCategory[]
+}
+
+model RecruiterCategory {
+  id          String    @id @default(uuid())
+  recruiterId String
+  industryId  Int                // soft ref -> Master Data Service industries.id
+  assignedAt  DateTime  @default(now())
+
+  recruiter   Recruiter @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
+
+  @@unique([recruiterId, industryId])
+}

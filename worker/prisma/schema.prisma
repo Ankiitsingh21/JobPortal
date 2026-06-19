@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum JobType {
+  full_time
+  part_time
+  contract
+}
+
+enum Availability {
+  immediate
+  within_15_days
+  within_30_days
+}
+
+model WorkerProfile {
+  id                     String        @id @default(uuid())
+  userId                 String        @unique   // soft ref -> Auth Service users.id
+  name                   String?
+  phone                  String?
+  dob                    DateTime?
+  gender                 String?
+  city                   String?
+  currentLocality        String?
+  profilePhotoUrl        String?
+  headline               String?
+  summary                String?
+  totalExperienceMonths  Int           @default(0)
+  expectedSalaryMin      Int?
+  expectedSalaryMax      Int?
+  jobType                JobType?
+  availability           Availability?
+  resumeUrl              String?
+  profileComplete        Boolean       @default(false)
+
+  // soft refs -> Master Data Service ids, stored as plain int arrays
+  skillIds               Int[]         @default([])
+  languageIds            Int[]         @default([])
+  preferredLocationIds   Int[]         @default([])
+  preferredIndustryIds   Int[]         @default([])
+
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+
+  education   WorkerEducation[]
+  experience  WorkerExperience[]
+}
+
+model WorkerEducation {
+  id               String   @id @default(uuid())
+  workerId         String
+  qualificationId  Int               // soft ref -> Master Data Service qualifications.id
+  institute        String?
+  passoutYear      Int?
+  score            String?
+
+  worker WorkerProfile @relation(fields: [workerId], references: [id], onDelete: Cascade)
+}
+
+model WorkerExperience {
+  id           String    @id @default(uuid())
+  workerId     String
+  companyName  String
+  jobTitle     String
+  fromDate     DateTime
+  toDate       DateTime?
+  isCurrent    Boolean   @default(false)
+  description  String?
+
+  worker WorkerProfile @relation(fields: [workerId], references: [id], onDelete: Cascade)
+}
