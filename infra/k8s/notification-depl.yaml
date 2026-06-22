@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification
+  template:
+    metadata:
+      labels:
+        app: notification
+    spec:
+      containers:
+        - name: notification
+          image: jp-notification
+          env:
+            - name: NATS_URL
+              value: nats://nats-srv:4222
+
+            # Optional: wire up real SMS via MSG91 in production
+            # - name: MSG91_API_KEY
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: msg91-secret
+            #       key: MSG91_API_KEY
+
+            # Optional: wire up real email via SMTP in production
+            # - name: SMTP_HOST
+            #   value: smtp.example.com
+            # - name: SMTP_PORT
+            #   value: "587"
+            # - name: SMTP_USER
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: smtp-secret
+            #       key: SMTP_USER
+            # - name: SMTP_PASS
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: smtp-secret
+            #       key: SMTP_PASS
+            # - name: SMTP_FROM
+            #   value: noreply@jobportal.com
+# No Service needed — notification is a NATS subscriber only, nothing calls it via HTTP

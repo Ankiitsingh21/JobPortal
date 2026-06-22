@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: application-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: application
+  template:
+    metadata:
+      labels:
+        app: application
+    spec:
+      containers:
+        - name: application
+          image: ankiitsingh21/jp-application
+          env:
+            - name: DATABASE_URL
+              value: "postgres://postgres:postgres@postgres-application-srv:5432/application"
+            - name: JOB_SERVICE_URL
+              value: "http://job-srv:3003"
+            - name: NATS_URL
+              value: "nats://nats-srv:4222"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: application-srv
+spec:
+  selector:
+    app: application
+  ports:
+    - name: application
+      protocol: TCP
+      port: 3004
+      targetPort: 3004

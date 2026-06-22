@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin
+  template:
+    metadata:
+      labels:
+        app: admin
+    spec:
+      containers:
+        - name: admin
+          image: ankiitsingh21/jp-admin
+          env:
+            - name: DATABASE_URL
+              value: "postgres://postgres:postgres@postgres-admin-srv:5432/admin"
+            - name: AUTH_SERVICE_URL
+              value: "http://auth-srv:3000"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: internal-api-key-secret
+                  key: INTERNAL_API_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-srv
+spec:
+  selector:
+    app: admin
+  ports:
+    - name: admin
+      protocol: TCP
+      port: 3001
+      targetPort: 3001

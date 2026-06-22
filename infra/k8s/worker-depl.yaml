@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        - name: worker
+          image: ankiitsingh21/jp-worker
+          env:
+            - name: DATABASE_URL
+              value: "postgres://postgres:postgres@postgres-worker-srv:5432/worker"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: worker-srv
+spec:
+  selector:
+    app: worker
+  ports:
+    - name: worker
+      protocol: TCP
+      port: 3002
+      targetPort: 3002

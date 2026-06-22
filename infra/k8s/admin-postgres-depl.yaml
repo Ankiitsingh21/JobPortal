@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-postgres-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-postgres
+  template:
+    metadata:
+      labels:
+        app: admin-postgres
+    spec:
+      containers:
+        - name: admin-postgres
+          image: postgres
+          env:
+            - name: POSTGRES_DB
+              value: admin
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+          ports:
+            - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-admin-srv
+spec:
+  selector:
+    app: admin-postgres
+  ports:
+    - name: db
+      protocol: TCP
+      port: 5432
+      targetPort: 5432

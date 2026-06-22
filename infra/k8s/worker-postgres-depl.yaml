@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-postgres-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker-postgres
+  template:
+    metadata:
+      labels:
+        app: worker-postgres
+    spec:
+      containers:
+        - name: worker-postgres
+          image: postgres
+          env:
+            - name: POSTGRES_DB
+              value: worker
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+          ports:
+            - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-worker-srv
+spec:
+  selector:
+    app: worker-postgres
+  ports:
+    - name: db
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
