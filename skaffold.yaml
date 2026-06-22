@@ -8,9 +8,25 @@ deploy:
 
 build:
     local:
-      push: false
+      push: false # Change this to true when pushing to a remote registry for DigitalOcean
     artifacts:
-      - image: ankiitsingh21/auth
+      - image: ankiitsingh21/jp-admin
+        context: admin
+        docker:
+          dockerfile: Dockerfile
+        sync:
+          manual:
+            - src: 'src/**/*.ts'
+              dest: .
+      - image: ankiitsingh21/jp-application
+        context: application
+        docker:
+          dockerfile: Dockerfile
+        sync:
+          manual:
+            - src: 'src/**/*.ts'
+              dest: .
+      - image: ankiitsingh21/jp-auth
         context: auth
         docker:
           dockerfile: Dockerfile
@@ -18,64 +34,32 @@ build:
           manual:
             - src: 'src/**/*.ts'
               dest: .
-      - image: ankiitsingh21/wallet
-        context: wallet
+      - image: ankiitsingh21/jp-job
+        context: job
         docker:
           dockerfile: Dockerfile
         sync:
           manual:
             - src: 'src/**/*.ts'
               dest: .
-      - image: ankiitsingh21/order
-        context: order
+      - image: ankiitsingh21/jp-master-data
+        context: master-data
         docker:
           dockerfile: Dockerfile
         sync:
           manual:
             - src: 'src/**/*.ts'
               dest: .
-      - image: ankiitsingh21/stock
-        context: stock
+      - image: ankiitsingh21/jp-notification
+        context: notification
         docker:
           dockerfile: Dockerfile
         sync:
           manual:
             - src: 'src/**/*.ts'
               dest: .
-      - image: ankiitsingh21/portfolio
-        context: portfolio
-        docker:
-          dockerfile: Dockerfile
-        sync:
-          manual:
-            - src: 'src/**/*.ts'
-              dest: .
-      - image: ankiitsingh21/tradeengine
-        context: tradeengine
-        docker:
-          dockerfile: Dockerfile
-        sync:
-          manual:
-            - src: 'src/**/*.ts'
-              dest: .
-      - image: ankiitsingh21/expiration
-        context: expiration
-        docker:
-          dockerfile: Dockerfile
-        sync:
-          manual:
-            - src: 'src/**/*.ts'
-              dest: .
-      - image: ankiitsingh21/client
-        context: client
-        docker:
-          dockerfile: Dockerfile
-        sync:
-          manual:
-            - src: '**/*.js'
-              dest: .
-      - image: ankiitsingh21/payment
-        context: payment
+      - image: ankiitsingh21/jp-worker
+        context: worker
         docker:
           dockerfile: Dockerfile
         sync:

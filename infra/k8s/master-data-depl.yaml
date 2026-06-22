@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: master-data
-          image: jp-master-data
+          image: ankiitsingh21/jp-master-data
           env:
             - name: JWT_KEY
               valueFrom:
