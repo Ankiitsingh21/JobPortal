@@ -101,4 +101,9 @@ router.get("/internal/by-recruiter/:userId", async (req: Request, res: Response)
   res.send({ success: true, data: jobs });
 });
 
+
+router.get("/internal/:id", async (req: Request, res: Response) => {
+  res.send({ success: true, data: await svc.getJob(req.params.id as string) });
+});
+
 export default router;

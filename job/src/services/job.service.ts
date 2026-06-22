@@ -1,5 +1,6 @@
 import { prisma } from "../config/db";
 import { BadRequestError, ForbiddenError, NotFoundError } from "../common";
+import { natsWrapper } from "../natswrapper";
 
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {
   draft: ["active", "closed"],
@@ -78,6 +79,9 @@ export const updateJobStatus = async (
 
   // TODO: once Notification Service exists, publish "job.status.changed"
   // here when status becomes "active", so matching workers get notified.
+  if (newStatus === "active") {
+  natsWrapper.publish("job.status.changed", { jobId: id, status: newStatus });
+}
   console.log(`[DEV ONLY] Job ${id} status changed: ${job.status} -> ${newStatus}`);
 
   return updated;

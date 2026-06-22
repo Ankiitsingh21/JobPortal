@@ -18,6 +18,7 @@
     "express-validator": "^7.3.1",
     "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.3",
+    "nats": "^2.29.3",
     "pg": "^8.20.0",
     "prisma": "^7.6.0"
   },

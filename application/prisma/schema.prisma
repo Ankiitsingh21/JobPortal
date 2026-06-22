@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ApplicationStatus {
+  applied
+  shortlisted
+  interview_scheduled
+  hired
+  rejected
+}
+
+model Application {
+  id          String             @id @default(uuid())
+  jobId       String                      // soft ref -> Job Service
+  workerId    String                      // soft ref -> Auth Service users.id
+  recruiterId String                      // soft ref -> Auth Service users.id (copied from job.postedBy at apply time)
+  status      ApplicationStatus  @default(applied)
+  coverNote   String?
+  appliedAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  history ApplicationStatusHistory[]
+
+  @@unique([jobId, workerId])
+  @@index([recruiterId])
+  @@index([workerId])
+}
+
+model ApplicationStatusHistory {
+  id            String   @id @default(uuid())
+  applicationId String
+  fromStatus    String?
+  toStatus      String
+  changedBy     String            // soft ref -> Auth Service users.id
+  notes         String?
+  changedAt     DateTime @default(now())
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+}

@@ -4,6 +4,7 @@ import { Password } from "../utils/password";
 import { BadRequestError, NotFoundError, UserPayload } from "../common";
 import axios from "axios";
 import jwt from "jsonwebtoken";
+import { natsWrapper } from "../natswrapper";
 
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -34,6 +35,7 @@ export const registerWorker = async (email: string, password: string, phone: str
 
   // TODO: once Notification Service exists, publish "auth.otp.requested"
   // NATS event here instead of console logging.
+  natsWrapper.publish("auth.otp.requested", { phone, otp });
   console.log(`[DEV ONLY] OTP for ${phone}: ${otp}`);
 
   return {
@@ -67,7 +69,7 @@ export const resendWorkerOtp = async (phone: string) => {
   const otp = generateOtp();
   await storeOtp(phone, otp);
   console.log(`[DEV ONLY] Resent OTP for ${phone}: ${otp}`);
-
+  natsWrapper.publish("auth.otp.requested", { phone, otp });
   return {
     devOtp: process.env.NODE_ENV === "production" ? undefined : otp,
   };
