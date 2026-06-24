@@ -10,11 +10,54 @@ spec:
     - host: scnjobs.com
       http:
         paths:
-          - path: /api/users/?(.*)
+          # 1. Auth Service (from auth/src/app.ts)
+          - path: /api/auth/?(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: auth-srv
                 port:
                   number: 3000
-          # Add similar routing for job-srv, admin-srv, etc.
+          
+          # 2. Master Data Service (from master-data/src/app.ts)
+          - path: /api/master/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: master-data-srv
+                port:
+                  number: 3000
+          
+          # 3. Job Service (from job/src/app.ts)
+          - path: /api/jobs/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: job-srv
+                port:
+                  number: 3003
+          
+          # 4. Application Service (from application/src/app.ts)
+          - path: /api/applications/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: application-srv
+                port:
+                  number: 3004
+          
+          # 5. Admin Service (from admin/src/app.ts)
+          - path: /api/admin/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: admin-srv
+                port:
+                  number: 3001
+          - path: /api/worker/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: worker-srv
+                port:
+                  number: 3002
